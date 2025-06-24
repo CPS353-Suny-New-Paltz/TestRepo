@@ -38,3 +38,9 @@ jobs:
 
     - name: Build with Gradle Wrapper
       run: chmod a+rwx gradlew; ./gradlew build
+
+    - name: Save test results
+      uses: actions/upload-artifact@v4
+      with:
+          name: test-report
+          path: build/reports/tests/test/**/*.*

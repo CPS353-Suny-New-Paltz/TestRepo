@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 public class TestStatusCheckPR {
@@ -29,16 +30,20 @@ public class TestStatusCheckPR {
         
         boolean foundPullRequest = false;
         // check each pull request to see if one meets assignment requirements
-        for (JsonElement pr : JsonParser.parseString(pullRequests).getAsJsonArray().asList()) {
-            String prNumber = pr.getAsJsonObject().get("number").getAsString();
-            
-            if (hasStatusChecks(baseApiPath, prNumber) &&
-                    hasReviewerApproval(baseApiPath, prNumber)) {
-                foundPullRequest = true;
-                break;
+        try {
+            for (JsonElement pr : JsonParser.parseString(pullRequests).getAsJsonArray().asList()) {
+                String prNumber = pr.getAsJsonObject().get("number").getAsString();
+
+                if (hasStatusChecks(baseApiPath, prNumber) &&
+                        hasReviewerApproval(baseApiPath, prNumber)) {
+                    foundPullRequest = true;
+                    break;
+                }
             }
+        } catch (Exception e) {
+            throw new RuntimeException("Curl output: " + pullRequests, e);
         }
-        
+
         Assertions.assertTrue(foundPullRequest, "No pull request with required status checks (failure, then success) and reviewer approval found");
     }
     
@@ -127,7 +132,7 @@ public class TestStatusCheckPR {
     private Map<String, String> getStatusCheckResult(String baseApiPath, JsonElement commit) throws Exception {
         String sha = commit.getAsJsonObject().get("sha").getAsString();
         String getStatusChecks = baseApiPath + "commits/" + sha + "/check-runs";
-        String statusCheckResult = curl (getStatusChecks);
+        String statusCheckResult = curl(getStatusChecks);
         Map<String, String> checkToStatus = new HashMap<>();
         
         for (JsonElement check : JsonParser.parseString(statusCheckResult).getAsJsonObject().get("check_runs").getAsJsonArray().asList()) {

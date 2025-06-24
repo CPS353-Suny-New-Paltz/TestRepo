@@ -54,7 +54,11 @@ public class TestStatusCheckPR {
         getRemote.waitFor();
         String output = new String(getRemote.getInputStream().readAllBytes());
         String ownerRepo = output.substring("https://github.com/".length());
-        ownerRepo = ownerRepo.substring(0, ownerRepo.lastIndexOf("."));
+        int removeTrailingGit = ownerRepo.lastIndexOf(".");
+        if (removeTrailingGit < 0) {
+            removeTrailingGit = ownerRepo.length() - 1;
+        }
+        ownerRepo = ownerRepo.substring(0, removeTrailingGit);
         
         return "https://api.github.com/repos/" + ownerRepo + "/";
                 

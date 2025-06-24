@@ -28,16 +28,22 @@ public class TestStatusCheckPR {
         String toCurl = baseApiPath + "pulls?state=all";
         String pullRequests = curl(toCurl);
         
+        String message = baseApiPath + ";" + pullRequests;
+        
         boolean foundPullRequest = false;
-        // check each pull request to see if one meets assignment requirements
-        for (JsonElement pr : JsonParser.parseString(pullRequests).getAsJsonArray().asList()) {
-            String prNumber = pr.getAsJsonObject().get("number").getAsString();
+        try {
+            // check each pull request to see if one meets assignment requirements
+            for (JsonElement pr : JsonParser.parseString(pullRequests).getAsJsonArray().asList()) {
+                String prNumber = pr.getAsJsonObject().get("number").getAsString();
 
-            if (hasStatusChecks(baseApiPath, prNumber) &&
-                    hasReviewerApproval(baseApiPath, prNumber)) {
-                foundPullRequest = true;
-                break;
+                if (hasStatusChecks(baseApiPath, prNumber) &&
+                        hasReviewerApproval(baseApiPath, prNumber)) {
+                    foundPullRequest = true;
+                    break;
+                }
             }
+        } catch (Exception e) {
+            throw new RuntimeException(message + ";" + e.getMessage(), e);
         }
         Assertions.assertTrue(foundPullRequest, "No pull request with required status checks (failure, then success) and reviewer approval found");
     }

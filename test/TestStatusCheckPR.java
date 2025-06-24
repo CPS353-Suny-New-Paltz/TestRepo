@@ -28,7 +28,7 @@ public class TestStatusCheckPR {
         String toCurl = baseApiPath + "pulls?state=all";
         String pullRequests = curl(toCurl);
         
-        String message = baseApiPath + ";" + pullRequests;
+        String message = baseApiPath + ";" + toCurl;
         
         boolean foundPullRequest = false;
         try {
@@ -54,7 +54,7 @@ public class TestStatusCheckPR {
         getRemote.waitFor();
         String output = new String(getRemote.getInputStream().readAllBytes());
         String ownerRepo = output.substring("https://github.com/".length());
-        ownerRepo = ownerRepo.substring(0, ownerRepo.length() - ".git".length() - 1);
+        ownerRepo = ownerRepo.substring(0, ownerRepo.lastIndexOf("."));
         
         return "https://api.github.com/repos/" + ownerRepo + "/";
                 

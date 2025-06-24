@@ -1,3 +1,3 @@
-public class Helloworld {
-  nonsense
+public class HelloWorld {
+  //nonsense
 }

@@ -40,6 +40,7 @@ jobs:
       run: chmod a+rwx gradlew; ./gradlew build
 
     - name: Save test results
+      if: success() || failure()
       uses: actions/upload-artifact@v4
       with:
           name: test-report

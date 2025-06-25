@@ -137,19 +137,16 @@ public class TestStatusCheckPR {
         String getStatusChecks = baseApiPath + "commits/" + sha + "/check-runs";
         String statusCheckResult = curl(getStatusChecks);
         Map<String, String> checkToStatus = new HashMap<>();
-        try {
-            for (JsonElement check : JsonParser.parseString(statusCheckResult).getAsJsonObject().get("check_runs").getAsJsonArray().asList()) {
-                String name = check.getAsJsonObject().get("name").getAsString();
-                String status =  check.getAsJsonObject().get("status").getAsString();
-                if (status.equals(COMPLETED)) {
-                    String result = check.getAsJsonObject().get("conclusion").getAsString();
-                    checkToStatus.put(name, result);
-                }
-            }
 
-        } catch (Exception e) {
-            throw new RuntimeException(statusCheckResult + ";" + e.getMessage(), e);
+        for (JsonElement check : JsonParser.parseString(statusCheckResult).getAsJsonObject().get("check_runs").getAsJsonArray().asList()) {
+            String name = check.getAsJsonObject().get("name").getAsString();
+            String status =  check.getAsJsonObject().get("status").getAsString();
+            if (status.equals(COMPLETED)) {
+                String result = check.getAsJsonObject().get("conclusion").getAsString();
+                checkToStatus.put(name, result);
+            }
         }
+        
         return checkToStatus;
     }
 

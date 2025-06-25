@@ -28,7 +28,7 @@ public class TestStatusCheckPR {
         String toCurl = baseApiPath + "pulls?state=all";
         String pullRequests = curl(toCurl);
         
-        String message = baseApiPath + ";" + toCurl;
+        String message = baseApiPath + ";" + toCurl + ";" + pullRequests;
         
         boolean foundPullRequest = false;
         try {

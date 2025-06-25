@@ -21,6 +21,7 @@ import com.google.gson.JsonParser;
 
 public class TestStatusCheckPR {
     
+    private static final String COMPLETED = "completed";
     private static final int NUM_CHECKS = 2;
     private static final String SUCCESS = "success";
     private static final String APPROVED = "APPROVED";
@@ -139,8 +140,11 @@ public class TestStatusCheckPR {
         try {
             for (JsonElement check : JsonParser.parseString(statusCheckResult).getAsJsonObject().get("check_runs").getAsJsonArray().asList()) {
                 String name = check.getAsJsonObject().get("name").getAsString();
-                String result = check.getAsJsonObject().get("conclusion").getAsString();
-                checkToStatus.put(name, result);
+                String status =  check.getAsJsonObject().get("status").getAsString();
+                if (status.equals(COMPLETED)) {
+                    String result = check.getAsJsonObject().get("conclusion").getAsString();
+                    checkToStatus.put(name, result);
+                }
             }
 
         } catch (Exception e) {
@@ -156,12 +160,9 @@ public class TestStatusCheckPR {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"))) {
             String line; 
             while ((line = reader.readLine()) != null) {
-                result+=line + "\n";
+                result += line + "\n";
             }
         }
-//        Process getRemote = new ProcessBuilder("curl", toCurl).start();
-//        String output = new String(getRemote.getInputStream().readAllBytes());
-//        getRemote.waitFor();
         return result;
     }
 }

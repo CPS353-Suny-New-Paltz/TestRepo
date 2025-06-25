@@ -1,4 +1,7 @@
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -13,7 +16,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 public class TestStatusCheckPR {
@@ -149,9 +151,18 @@ public class TestStatusCheckPR {
     }
 
     private String curl(String toCurl) throws Exception {
-        Process getRemote = new ProcessBuilder("curl", toCurl).start();
-        String output = new String(getRemote.getInputStream().readAllBytes());
-        getRemote.waitFor();
-        return output;
+        URL url = new URL(toCurl);
+
+        String result = "";
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"))) {
+            String line; 
+            while ((line = reader.readLine()) != null) {
+                result+=line + "\n";
+            }
+        }
+//        Process getRemote = new ProcessBuilder("curl", toCurl).start();
+//        String output = new String(getRemote.getInputStream().readAllBytes());
+//        getRemote.waitFor();
+        return result;
     }
 }
